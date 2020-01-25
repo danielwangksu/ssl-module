@@ -54,17 +54,17 @@ typedef int socklen_t;
 #  undef AF_NETLINK
 #endif
 
-#ifdef HAVE_BLUETOOTH_BLUETOOTH_H
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
-#include <bluetooth/l2cap.h>
-#include <bluetooth/sco.h>
-#include <bluetooth/hci.h>
-#endif
+// #ifdef HAVE_BLUETOOTH_BLUETOOTH_H
+// #include <bluetooth/bluetooth.h>
+// #include <bluetooth/rfcomm.h>
+// #include <bluetooth/l2cap.h>
+// #include <bluetooth/sco.h>
+// #include <bluetooth/hci.h>
+// #endif
 
-#ifdef HAVE_BLUETOOTH_H
-#include <bluetooth.h>
-#endif
+// #ifdef HAVE_BLUETOOTH_H
+// #include <bluetooth.h>
+// #endif
 
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
@@ -144,12 +144,12 @@ typedef union sock_addr {
     struct sockaddr_in6 in6;
     struct sockaddr_storage storage;
 #endif
-#ifdef HAVE_BLUETOOTH_BLUETOOTH_H
-    struct sockaddr_l2 bt_l2;
-    struct sockaddr_rc bt_rc;
-    struct sockaddr_sco bt_sco;
-    struct sockaddr_hci bt_hci;
-#endif
+// #ifdef HAVE_BLUETOOTH_BLUETOOTH_H
+//     struct sockaddr_l2 bt_l2;
+//     struct sockaddr_rc bt_rc;
+//     struct sockaddr_sco bt_sco;
+//     struct sockaddr_hci bt_hci;
+// #endif
 #ifdef HAVE_NETPACKET_PACKET_H
     struct sockaddr_ll ll;
 #endif

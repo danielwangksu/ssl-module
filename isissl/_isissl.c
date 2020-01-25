@@ -97,7 +97,7 @@ struct py_ssl_library_code {
 };
 
 /* Include generated data (error codes) */
-#include "_ssl_data.h"
+#include "_isissl_data.h"
 
 #if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
 #  define OPENSSL_VERSION_1_1 1
@@ -314,7 +314,7 @@ class _ssl.MemoryBIO "PySSLMemoryBIO *" "&PySSLMemoryBIO_Type"
 [clinic start generated code]*/
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=7bf7cb832638e2e1]*/
 
-#include "clinic/_ssl.c.h"
+#include "_ssl.c.h"
 
 static int PySSL_select(PySocketSockObject *s, int writing, _PyTime_t timeout);
 
