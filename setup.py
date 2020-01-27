@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import Extension 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 with open('README') as f:
@@ -13,7 +13,7 @@ with open('LICENSE') as f:
 
 module = Extension(
     "_isissl",
-    sources=["isissl/_isissl.c"],
+    sources=["isissl/_isissl/_isissl.c"],
     extra_compile_args=['-Wall'],
     libraries=['ssl', 'crypto', 'dl'],
     library_dirs=['/usr/lib/x86_64-linux-gnu'],
@@ -30,7 +30,7 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3",
     ],
-    packages=['isissl', 'isissl.tests'],
+    packages=find_packages(),
     ext_modules=[module],
     test_suite="tests",
 )
