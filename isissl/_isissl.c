@@ -314,7 +314,7 @@ class _ssl.MemoryBIO "PySSLMemoryBIO *" "&PySSLMemoryBIO_Type"
 [clinic start generated code]*/
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=7bf7cb832638e2e1]*/
 
-#include "_ssl.c.h"
+#include "_isissl.c.h"
 
 static int PySSL_select(PySocketSockObject *s, int writing, _PyTime_t timeout);
 
@@ -333,7 +333,7 @@ typedef enum {
 
 /* Wrap error strings with filename and line # */
 #define ERRSTR1(x,y,z) (x ":" y ": " z)
-#define ERRSTR(x) ERRSTR1("_ssl.c", Py_STRINGIFY(__LINE__), x)
+#define ERRSTR(x) ERRSTR1("_isissl.c", Py_STRINGIFY(__LINE__), x)
 
 /* Get the socket from a PySSLSocket, if it has one */
 #define GET_SOCKET(obj) ((obj)->Socket ? \
@@ -431,13 +431,13 @@ fill_and_set_sslerror(PyObject *type, int ssl_errno, const char *errstr,
         errstr = "unknown error";
 
     if (reason_obj && lib_obj)
-        msg = PyUnicode_FromFormat("[%S: %S] %s (_ssl.c:%d)",
+        msg = PyUnicode_FromFormat("[%S: %S] %s (_isissl.c:%d)",
                                    lib_obj, reason_obj, errstr, lineno);
     else if (lib_obj)
-        msg = PyUnicode_FromFormat("[%S] %s (_ssl.c:%d)",
+        msg = PyUnicode_FromFormat("[%S] %s (_isissl.c:%d)",
                                    lib_obj, errstr, lineno);
     else
-        msg = PyUnicode_FromFormat("%s (_ssl.c:%d)", errstr, lineno);
+        msg = PyUnicode_FromFormat("%s (_isissl.c:%d)", errstr, lineno);
     if (msg == NULL)
         goto fail;
 
@@ -2292,7 +2292,7 @@ static PyMethodDef PySSLMethods[] = {
 
 static PyTypeObject PySSLSocket_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "_ssl._SSLSocket",                  /*tp_name*/
+    "_isissl._SSLSocket",                  /*tp_name*/
     sizeof(PySSLSocket),                /*tp_basicsize*/
     0,                                  /*tp_itemsize*/
     /* methods */
@@ -3686,7 +3686,7 @@ static struct PyMethodDef context_methods[] = {
 
 static PyTypeObject PySSLContext_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "_ssl._SSLContext",                        /*tp_name*/
+    "_isissl._SSLContext",                        /*tp_name*/
     sizeof(PySSLContext),                      /*tp_basicsize*/
     0,                                         /*tp_itemsize*/
     (destructor)context_dealloc,               /*tp_dealloc*/
@@ -3906,7 +3906,7 @@ static struct PyMethodDef memory_bio_methods[] = {
 
 static PyTypeObject PySSLMemoryBIO_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "_ssl.MemoryBIO",                         /*tp_name*/
+    "_isissl.MemoryBIO",                         /*tp_name*/
     sizeof(PySSLMemoryBIO),                    /*tp_basicsize*/
     0,                                         /*tp_itemsize*/
     (destructor)memory_bio_dealloc,            /*tp_dealloc*/
@@ -4476,6 +4476,12 @@ _ssl_enum_crls_impl(PyObject *module, const char *store_name)
 #endif /* _MSC_VER */
 
 /* List of functions exported by this module. */
+// ml_name: The name of the method
+// ml_meth: Function pointer to the method implementation
+// ml_flags: Flags indicating special features of this method, such as
+//          accepting arguments, accepting keyword arguments, being a
+//          class method, or being a static method of a class.
+// ml_doc:  Contents of this method's docstring
 static PyMethodDef PySSL_methods[] = {
     _SSL__TEST_DECODE_CERT_METHODDEF
     _SSL_RAND_ADD_METHODDEF
@@ -4585,9 +4591,9 @@ PyDoc_STRVAR(module_doc,
 for documentation.");
 
 
-static struct PyModuleDef _sslmodule = {
+static struct PyModuleDef _isisslmodule = {
     PyModuleDef_HEAD_INIT,
-    "_ssl",
+    "_isissl",
     module_doc,
     -1,
     PySSL_methods,
@@ -4615,8 +4621,13 @@ parse_openssl_version(unsigned long libver,
     *major = libver & 0xFF;
 }
 
+
+// Module initialization
+// Python calls this function when importing this extension.
+// It is important that this function is named PyInit_[MODULE_NAME] 
+// exactly matches the name keyword in setup.py's setup() call.
 PyMODINIT_FUNC
-PyInit__ssl(void)
+PyInit__isissl(void)
 {
     PyObject *m, *d, *r;
     unsigned long libver;
@@ -4632,7 +4643,7 @@ PyInit__ssl(void)
     if (PyType_Ready(&PySSLMemoryBIO_Type) < 0)
         return NULL;
 
-    m = PyModule_Create(&_sslmodule);
+    m = PyModule_Create(&_isisslmodule);
     if (m == NULL)
         return NULL;
     d = PyModule_GetDict(m);
