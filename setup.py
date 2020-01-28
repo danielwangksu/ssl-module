@@ -12,8 +12,8 @@ with open('LICENSE') as f:
     license = f.read()
 
 module = Extension(
-    "_isissl",
-    sources=["isissl/_isissl/_isissl.c"],
+    "isissl._ssl",
+    sources=["isissl/_ssl/_ssl.c"],
     extra_compile_args=['-Wall'],
     libraries=['ssl', 'crypto', 'dl'],
     library_dirs=['/usr/lib/x86_64-linux-gnu'],

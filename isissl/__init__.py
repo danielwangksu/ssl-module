@@ -96,41 +96,41 @@ import os
 from collections import namedtuple
 from enum import Enum as _Enum, IntEnum as _IntEnum
 
-import _isissl             # if we can't import it, let the error propagate
+import isissl._ssl as _ssl             # if we can't import it, let the error propagate
 
-from _isissl import OPENSSL_VERSION_NUMBER, OPENSSL_VERSION_INFO, OPENSSL_VERSION
-from _isissl import _SSLContext, MemoryBIO
-from _isissl import (
+from isissl._ssl import OPENSSL_VERSION_NUMBER, OPENSSL_VERSION_INFO, OPENSSL_VERSION
+from isissl._ssl import _SSLContext, MemoryBIO
+from isissl._ssl import (
     SSLError, SSLZeroReturnError, SSLWantReadError, SSLWantWriteError,
     SSLSyscallError, SSLEOFError,
     )
-from _isissl import CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED
-from _isissl import txt2obj as _txt2obj, nid2obj as _nid2obj
-from _isissl import RAND_status, RAND_add, RAND_bytes, RAND_pseudo_bytes
+from isissl._ssl import CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED
+from isissl._ssl import txt2obj as _txt2obj, nid2obj as _nid2obj
+from isissl._ssl import RAND_status, RAND_add, RAND_bytes, RAND_pseudo_bytes
 try:
-    from _isissl import RAND_egd
+    from isissl._ssl import RAND_egd
 except ImportError:
     # LibreSSL does not provide RAND_egd
     pass
 
 def _import_symbols(prefix):
-    for n in dir(_isissl):
+    for n in dir(_ssl):
         if n.startswith(prefix):
-            globals()[n] = getattr(_isissl, n)
+            globals()[n] = getattr(_ssl, n)
 
 _import_symbols('OP_')
 _import_symbols('ALERT_DESCRIPTION_')
 _import_symbols('SSL_ERROR_')
 _import_symbols('VERIFY_')
 
-from _isissl import HAS_SNI, HAS_ECDH, HAS_NPN, HAS_ALPN
+from isissl._ssl import HAS_SNI, HAS_ECDH, HAS_NPN, HAS_ALPN
 
-from _isissl import _OPENSSL_API_VERSION
+from isissl._ssl import _OPENSSL_API_VERSION
 
 _IntEnum._convert(
         '_SSLMethod', __name__,
         lambda name: name.startswith('PROTOCOL_') and name != 'PROTOCOL_SSLv23',
-        source=_isissl)
+        source=_ssl)
 
 PROTOCOL_SSLv23 = _SSLMethod.PROTOCOL_SSLv23 = _SSLMethod.PROTOCOL_TLS
 _PROTOCOL_NAMES = {value: name for name, value in _SSLMethod.__members__.items()}
@@ -141,7 +141,7 @@ except NameError:
     _SSLv2_IF_EXISTS = None
 
 if sys.platform == "win32":
-    from _isissl import enum_certificates, enum_crls
+    from isissl._ssl import enum_certificates, enum_crls
 
 from socket import socket, AF_INET, SOCK_STREAM, create_connection
 from socket import SOL_SOCKET, SO_TYPE
@@ -152,7 +152,7 @@ import warnings
 
 socket_error = OSError  # keep that public name in module namespace
 
-if _isissl.HAS_TLS_UNIQUE:
+if _ssl.HAS_TLS_UNIQUE:
     CHANNEL_BINDING_TYPES = ['tls-unique']
 else:
     CHANNEL_BINDING_TYPES = []
@@ -319,7 +319,7 @@ DefaultVerifyPaths = namedtuple("DefaultVerifyPaths",
 def get_default_verify_paths():
     """Return paths to default cafile and capath.
     """
-    parts = _isissl.get_default_verify_paths()
+    parts = _ssl.get_default_verify_paths()
 
     # environment vars shadow paths
     cafile = os.environ.get(parts[0], parts[1])
@@ -456,7 +456,7 @@ def create_default_context(purpose=Purpose.SERVER_AUTH, *, cafile=None,
     context.options |= OP_NO_SSLv3
 
     # disable compression to prevent CRIME attacks (OpenSSL 1.0+)
-    context.options |= getattr(_isissl, "OP_NO_COMPRESSION", 0)
+    context.options |= getattr(_ssl, "OP_NO_COMPRESSION", 0)
 
     if purpose == Purpose.SERVER_AUTH:
         # verify certs and host name in client mode
@@ -465,11 +465,11 @@ def create_default_context(purpose=Purpose.SERVER_AUTH, *, cafile=None,
     elif purpose == Purpose.CLIENT_AUTH:
         # Prefer the server's ciphers by default so that we get stronger
         # encryption
-        context.options |= getattr(_isissl, "OP_CIPHER_SERVER_PREFERENCE", 0)
+        context.options |= getattr(_ssl, "OP_CIPHER_SERVER_PREFERENCE", 0)
 
         # Use single use keys in order to improve forward secrecy
-        context.options |= getattr(_isissl, "OP_SINGLE_DH_USE", 0)
-        context.options |= getattr(_isissl, "OP_SINGLE_ECDH_USE", 0)
+        context.options |= getattr(_ssl, "OP_SINGLE_DH_USE", 0)
+        context.options |= getattr(_ssl, "OP_SINGLE_ECDH_USE", 0)
 
         # disallow ciphers with known vulnerabilities
         context.set_ciphers(_RESTRICTED_SERVER_CIPHERS)
@@ -606,14 +606,14 @@ class SSLObject:
         """Return the currently selected NPN protocol as a string, or ``None``
         if a next protocol was not negotiated or if NPN is not supported by one
         of the peers."""
-        if _isissl.HAS_NPN:
+        if _ssl.HAS_NPN:
             return self._sslobj.selected_npn_protocol()
 
     def selected_alpn_protocol(self):
         """Return the currently selected ALPN protocol as a string, or ``None``
         if a next protocol was not negotiated or if ALPN is not supported by one
         of the peers."""
-        if _isissl.HAS_ALPN:
+        if _ssl.HAS_ALPN:
             return self._sslobj.selected_alpn_protocol()
 
     def cipher(self):
